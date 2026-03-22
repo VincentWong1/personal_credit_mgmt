@@ -26,6 +26,3 @@ class WorkerOut(BaseModel):
     model_config = {"from_attributes": True}
 
 
-class WorkerDetail(WorkerOut):
-    from app.schemas.risk_event import RiskEventOut
-    risk_events: list[RiskEventOut] = []

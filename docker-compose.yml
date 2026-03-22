@@ -1,0 +1,21 @@
+services:
+  backend:
+    build: ./backend
+    container_name: credit-mgmt-backend
+    environment:
+      - DATABASE_URL=sqlite+aiosqlite:///./data/credit_mgmt.db
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-dev-secret-key-please-change}
+    volumes:
+      - ./data:/app/data
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    container_name: credit-mgmt-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped

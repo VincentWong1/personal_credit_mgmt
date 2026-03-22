@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(docker compose build)",
+      "Bash(docker:*)",
+      "Bash(node:*)",
+      "Bash(chmod:*)",
+      "Bash(bash:*)",
+      "Bash(find:*)",
+      "Bash(curl:*)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\([p for p in list\\(d[''''paths''''].keys\\(\\)\\)[:10]]\\)\")",
+      "Bash(lsof:*)"
+    ]
+  }
+}
