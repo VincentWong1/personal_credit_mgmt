@@ -58,8 +58,9 @@ https://your-domain.com
 
 **1. 启动 Docker 服务：**
 ```bash
-docker-compose up -d --build
+DOCKER_BUILDKIT=0 COMPOSE_DOCKER_CLI_BUILD=0 docker-compose up -d --build
 ```
+> BuildKit 在某些网络环境下可能不稳定。尝试禁用。
 
 **2. 启动 ngrok：**
 ```bash
