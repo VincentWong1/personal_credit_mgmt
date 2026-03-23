@@ -64,15 +64,42 @@ mkdir -p "$DATA_DIR"
 # ========== 后端设置 ==========
 info "配置后端..."
 
-if [ ! -d "$VENV_DIR" ]; then
-    info "创建 Python 虚拟环境..."
-    "$PYTHON" -m venv "$VENV_DIR"
+# 检查是否在 conda 环境中
+if [ -n "$CONDA_DEFAULT_ENV" ]; then
+    info "检测到 conda 环境: $CONDA_DEFAULT_ENV"
+    info "使用当前 conda 环境..."
+
+    # 使用 conda 环境中的 Python
+    CONDA_PYTHON="$CONDA_PREFIX/bin/python3"
+    if [ ! -f "$CONDA_PYTHON" ]; then
+        CONDA_PYTHON="$CONDA_PREFIX/bin/python"
+    fi
+
+    # 检查关键依赖是否已安装
+    if ! "$CONDA_PYTHON" -c "import sqlalchemy, fastapi, uvicorn" 2>/dev/null; then
+        error "当前 conda 环境 ($CONDA_DEFAULT_ENV) 缺少必要依赖。"
+        echo ""
+        echo "请运行以下命令安装依赖："
+        echo "  conda activate $CONDA_DEFAULT_ENV"
+        echo "  pip install -r backend/requirements.txt"
+        echo ""
+        echo "或者切换到已安装依赖的环境后重新运行。"
+        exit 1
+    else
+        info "依赖检查通过"
+        # 更新 PYTHON 变量为 conda 环境中的 Python
+        PYTHON="$CONDA_PYTHON"
+    fi
+else
+    # 使用传统虚拟环境
+    if [ ! -d "$VENV_DIR" ]; then
+        info "创建 Python 虚拟环境..."
+        "$PYTHON" -m venv "$VENV_DIR"
+    fi
+    source "$VENV_DIR/bin/activate"
+    info "安装后端依赖..."
+    pip install -q -r "$BACKEND_DIR/requirements.txt"
 fi
-
-source "$VENV_DIR/bin/activate"
-
-info "安装后端依赖..."
-pip install -q -r "$BACKEND_DIR/requirements.txt"
 
 # 设置环境变量
 export DATABASE_URL="sqlite+aiosqlite:///$DATA_DIR/credit_mgmt.db"
@@ -81,11 +108,11 @@ export JWT_SECRET_KEY="${JWT_SECRET_KEY:-$(python3 -c 'import secrets; print(sec
 # 初始化数据库和种子数据
 info "初始化数据库..."
 cd "$BACKEND_DIR"
-python3 seed.py
+"$PYTHON" seed.py
 
 # 启动后端
 info "启动后端服务 (http://localhost:$BACKEND_PORT)..."
-uvicorn app.main:app --host 0.0.0.0 --port "$BACKEND_PORT" &
+"$PYTHON" -m uvicorn app.main:app --host 0.0.0.0 --port "$BACKEND_PORT" &
 BACKEND_PID=$!
 
 # ========== 前端设置 ==========
