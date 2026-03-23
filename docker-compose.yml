@@ -10,6 +10,8 @@ services:
     ports:
       - "8000:8000"
     restart: unless-stopped
+    networks:
+      - app-network
 
   frontend:
     build: ./frontend
@@ -19,3 +21,24 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
+    networks:
+      - app-network
+
+  # Cloudflare Tunnel (可选，用于外部访问)
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: credit-mgmt-tunnel
+    command: tunnel --config /etc/cloudflared/config.yml run
+    volumes:
+      - ./cloudflared:/etc/cloudflared
+    depends_on:
+      - frontend
+    restart: unless-stopped
+    networks:
+      - app-network
+    profiles:
+      - cloudflare  # 使用 profile 控制是否启动
+
+networks:
+  app-network:
+    driver: bridge

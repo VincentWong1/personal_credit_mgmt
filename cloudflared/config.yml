@@ -1,0 +1,9 @@
+tunnel: TUNNEL_ID_PLACEHOLDER
+credentials-file: /etc/cloudflared/credentials.json
+
+ingress:
+  # 将所有流量转发到前端容器
+  - hostname: YOUR_DOMAIN_PLACEHOLDER
+    service: http://frontend:80
+  # 捕获所有其他请求
+  - service: http_status:404
