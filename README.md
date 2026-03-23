@@ -1,4 +1,4 @@
-"# 建筑工人信用风险管理系统 - 实施方案
+# 建筑工人信用风险管理系统 - 实施方案
 
 ## Context
 
@@ -219,4 +219,4 @@ bash start.sh
 
 ```bash
 docker-compose up -d --build
-``
+```
