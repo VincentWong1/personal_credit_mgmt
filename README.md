@@ -217,6 +217,4 @@ bash start.sh
 
 ### Docker 部署的使用方式：
 
-```bash
-docker-compose up -d --build
 ```
